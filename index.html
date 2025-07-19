@@ -1,37 +1,1457 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Eslam App - برنامج محاسبي</title>
-  <link rel="stylesheet" href="Home.css">
-  <link rel="stylesheet" href="Home.js">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النظام المحاسبي الشامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        
+        .sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+        
+        .main-content {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.collapsed + .main-content {
+            margin-right: 70px;
+        }
+        
+        .account-tree {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Animation for alerts */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
 </head>
-<body>
-  <div id="login-section" class="container centered">
-    <h1>مرحبا بك في Eslam App</h1>
-    <div id="g_id_onload"
-         data-client_id="YOUR_GOOGLE_CLIENT_ID"
-         data-callback="handleCredentialResponse">
+<body class="bg-gray-100">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar bg-blue-800 text-white h-screen fixed top-0 right-0 w-64 shadow-lg">
+            <div class="p-4 flex items-center">
+                <div class="bg-white p-2 rounded-lg">
+                    <i class="fas fa-calculator text-blue-800 text-2xl"></i>
+                </div>
+                <span class="logo-text mr-2 text-xl font-bold">النظام المحاسبي</span>
+                <button id="toggleSidebar" class="mr-auto text-white focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="mt-6">
+                <div class="px-4">
+                    <div class="relative">
+                        <input type="text" placeholder="بحث..." class="w-full bg-blue-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-300">
+                        <i class="fas fa-search absolute left-4 top-3 text-blue-300"></i>
+                    </div>
+                </div>
+                
+                <ul class="mt-6">
+                    <li class="nav-item px-4 py-3 hover:bg-blue-700 flex items-center cursor-pointer">
+                        <i class="fas fa-home ml-2"></i>
+                        <span class="sidebar-text">الرئيسية</span>
+                    </li>
+                    
+                    <li class="nav-item px-4 py-3 hover:bg-blue-700 flex items-center cursor-pointer">
+                        <i class="fas fa-chart-line ml-2"></i>
+                        <span class="sidebar-text">لوحة التحكم</span>
+                    </li>
+                    
+                    <li class="nav-item px-4 py-3 bg-blue-700 flex items-center cursor-pointer">
+                        <i class="fas fa-wallet ml-2"></i>
+                        <span class="sidebar-text">الحسابات</span>
+                    </li>
+                    
+                    <li class="nav-item px-4 py-3 hover:bg-blue-700 flex items-center cursor-pointer">
+                        <i class="fas fa-exchange-alt ml-2"></i>
+                        <span class="sidebar-text">المعاملات</span>
+                    </li>
+                    
+                    <li class="nav-item px-4 py-3 hover:bg-blue-700 flex items-center cursor-pointer">
+                        <i class="fas fa-file-invoice-dollar ml-2"></i>
+                        <span class="sidebar-text">الفواتير</span>
+                    </li>
+                    
+                    <li class="nav-item px-4 py-3 hover:bg-blue-700 flex items-center cursor-pointer">
+                        <i class="fas fa-chart-pie ml-2"></i>
+                        <span class="sidebar-text">التقارير</span>
+                    </li>
+                    
+                    <li class="nav-item px-4 py-3 hover:bg-blue-700 flex items-center cursor-pointer">
+                        <i class="fas fa-cog ml-2"></i>
+                        <span class="sidebar-text">الإعدادات</span>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="absolute bottom-0 w-full p-4 bg-blue-900">
+                <div class="flex items-center">
+                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-full">
+                    <div class="mr-2 sidebar-text">
+                        <div class="font-bold">اسلام محمود</div>
+                        <div class="text-sm text-blue-300">مدير النظام</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content mr-64 w-full">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-wallet ml-2 text-blue-600"></i>
+                    إدارة الحسابات
+                </h1>
+                
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <div class="relative">
+                        <button class="text-gray-600 hover:text-gray-900 focus:outline-none">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-gray-600 hover:text-gray-900 focus:outline-none">
+                            <i class="fas fa-envelope text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">5</span>
+                        </button>
+                    </div>
+                    
+                    <div class="border-r border-gray-300 h-8"></div>
+                    
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-plus ml-2"></i>
+                        <span>إضافة حركة</span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Main Content Area -->
+            <div class="p-6">
+                <!-- Alerts Section -->
+                <div id="alertsContainer" class="mb-6"></div>
+                
+                <!-- Tabs -->
+                <div class="bg-white rounded-lg shadow-sm mb-6">
+                    <div class="border-b border-gray-200">
+                        <nav class="flex -mb-px">
+                            <button id="accountsTab" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm border-blue-500 text-blue-600">
+                                <i class="fas fa-list-ul ml-2"></i>
+                                الحسابات
+                            </button>
+                            <button id="addAccountTab" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                <i class="fas fa-plus-circle ml-2"></i>
+                                إضافة حساب
+                            </button>
+                            <button id="transactionsTab" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                <i class="fas fa-exchange-alt ml-2"></i>
+                                الحركات
+                            </button>
+                            <button id="reportsTab" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                <i class="fas fa-chart-pie ml-2"></i>
+                                التقارير
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- Accounts Tab Content -->
+                <div id="accountsContent" class="tab-content">
+                    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-gray-800">شجرة الحسابات</h2>
+                            <div class="flex space-x-2 space-x-reverse">
+                                <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-print ml-2"></i>
+                                    <span>طباعة</span>
+                                </button>
+                                <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-file-export ml-2"></i>
+                                    <span>تصدير</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="account-tree bg-gray-50 p-4 rounded-lg">
+                            <ul id="accountsTree" class="space-y-2">
+                                <!-- Accounts will be loaded here dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <h2 class="text-xl font-bold text-gray-800 mb-4">إحصائيات الحسابات</h2>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="text-blue-600 font-bold text-2xl mb-1" id="totalAccounts">0</div>
+                                    <div class="text-gray-600">إجمالي الحسابات</div>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="text-green-600 font-bold text-2xl mb-1" id="mainAccounts">0</div>
+                                    <div class="text-gray-600">حسابات رئيسية</div>
+                                </div>
+                                <div class="bg-purple-50 p-4 rounded-lg">
+                                    <div class="text-purple-600 font-bold text-2xl mb-1" id="subAccounts">0</div>
+                                    <div class="text-gray-600">حسابات فرعية</div>
+                                </div>
+                                <div class="bg-yellow-50 p-4 rounded-lg">
+                                    <div class="text-yellow-600 font-bold text-2xl mb-1" id="activeAccounts">0</div>
+                                    <div class="text-gray-600">حسابات نشطة</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <h2 class="text-xl font-bold text-gray-800 mb-4">أحدث الحسابات المضافة</h2>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الكود</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">اسم الحساب</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">النوع</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentAccountsTable" class="bg-white divide-y divide-gray-200">
+                                        <!-- Recent accounts will be loaded here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Account Tab Content -->
+                <div id="addAccountContent" class="tab-content hidden">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6">إضافة حساب جديد</h2>
+                        
+                        <form id="addAccountForm" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="accountCode" class="block text-sm font-medium text-gray-700 mb-1">كود الحساب</label>
+                                    <input type="text" id="accountCode" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                
+                                <div>
+                                    <label for="accountName" class="block text-sm font-medium text-gray-700 mb-1">اسم الحساب</label>
+                                    <input type="text" id="accountName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                
+                                <div>
+                                    <label for="accountType" class="block text-sm font-medium text-gray-700 mb-1">نوع الحساب</label>
+                                    <select id="accountType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="">اختر نوع الحساب</option>
+                                        <option value="asset">أصول</option>
+                                        <option value="liability">خصوم</option>
+                                        <option value="equity">حقوق ملكية</option>
+                                        <option value="revenue">إيرادات</option>
+                                        <option value="expense">مصروفات</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for="parentAccount" class="block text-sm font-medium text-gray-700 mb-1">الحساب الرئيسي</label>
+                                    <select id="parentAccount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">لا يوجد (حساب رئيسي)</option>
+                                        <!-- Parent accounts will be loaded here dynamically -->
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for="accountStatus" class="block text-sm font-medium text-gray-700 mb-1">حالة الحساب</label>
+                                    <select id="accountStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                                        <option value="active">نشط</option>
+                                        <option value="inactive">غير نشط</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for="openingBalance" class="block text-sm font-medium text-gray-700 mb-1">الرصيد الافتتاحي</label>
+                                    <input type="number" id="openingBalance" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" value="0">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="accountDescription" class="block text-sm font-medium text-gray-700 mb-1">وصف الحساب</label>
+                                <textarea id="accountDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-4 space-x-reverse">
+                                <button type="reset" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg">
+                                    إلغاء
+                                </button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-save ml-2"></i>
+                                    حفظ الحساب
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Transactions Tab Content -->
+                <div id="transactionsContent" class="tab-content hidden">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6">إدارة الحركات المالية</h2>
+                        
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="flex space-x-4 space-x-reverse">
+                                <button id="addTransactionBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-plus ml-2"></i>
+                                    إضافة حركة
+                                </button>
+                                <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-filter ml-2"></i>
+                                    تصفية
+                                </button>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="text" placeholder="بحث في الحركات..." class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الحركة</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحساب المدين</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحساب الدائن</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTable" class="bg-white divide-y divide-gray-200">
+                                    <!-- Transactions will be loaded here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mt-6">
+                            <div class="text-sm text-gray-500">
+                                عرض <span id="transactionsFrom">1</span> إلى <span id="transactionsTo">10</span> من <span id="totalTransactions">0</span> حركات
+                            </div>
+                            
+                            <div class="flex space-x-2 space-x-reverse">
+                                <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-lg">
+                                    السابق
+                                </button>
+                                <button class="bg-blue-600 text-white px-3 py-1 rounded-lg">
+                                    1
+                                </button>
+                                <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-lg">
+                                    التالي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reports Tab Content -->
+                <div id="reportsContent" class="tab-content hidden">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6">التقارير المالية</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                        <i class="fas fa-file-invoice text-blue-600 text-xl"></i>
+                                    </div>
+                                    <h3 class="font-bold text-lg">ميزان المراجعة</h3>
+                                </div>
+                                <p class="text-gray-600 mb-4">عرض جميع الحسابات مع أرصدتها خلال فترة محددة</p>
+                                <button class="text-blue-600 hover:text-blue-800 font-medium">
+                                    عرض التقرير <i class="fas fa-arrow-left ml-1"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-green-100 p-3 rounded-full mr-4">
+                                        <i class="fas fa-chart-bar text-green-600 text-xl"></i>
+                                    </div>
+                                    <h3 class="font-bold text-lg">قائمة الدخل</h3>
+                                </div>
+                                <p class="text-gray-600 mb-4">عرض الإيرادات والمصروفات وصافي الربح أو الخسارة</p>
+                                <button class="text-green-600 hover:text-green-800 font-medium">
+                                    عرض التقرير <i class="fas fa-arrow-left ml-1"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                                <div class="flex items-center mb-4">
+                                    <div class="bg-purple-100 p-3 rounded-full mr-4">
+                                        <i class="fas fa-balance-scale text-purple-600 text-xl"></i>
+                                    </div>
+                                    <h3 class="font-bold text-lg">الميزانية العمومية</h3>
+                                </div>
+                                <p class="text-gray-600 mb-4">عرض الأصول والخصوم وحقوق الملكية في تاريخ محدد</p>
+                                <button class="text-purple-600 hover:text-purple-800 font-medium">
+                                    عرض التقرير <i class="fas fa-arrow-left ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                            <h3 class="font-bold text-lg mb-4">تقرير مخصص</h3>
+                            
+                            <form class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">نوع التقرير</label>
+                                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                            <option>تقرير الحركات</option>
+                                            <option>تقرير أرصدة الحسابات</option>
+                                            <option>تقرير الإيرادات والمصروفات</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">الفترة</label>
+                                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                            <option>هذا الشهر</option>
+                                            <option>الشهر الماضي</option>
+                                            <option>هذا الربع</option>
+                                            <option>هذا العام</option>
+                                            <option>مخصص</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                                        <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                                        <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end">
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center">
+                                        <i class="fas fa-file-export ml-2"></i>
+                                        إنشاء التقرير
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="g_id_signin" data-type="standard"></div>
-  </div>
-
-  <div id="dashboard" class="container hidden">
-    <h2>لوحة التحكم</h2>
-    <ul>
-      <li onclick="showSection('journal')">قيود اليومية</li>
-      <li onclick="showSection('ledger')">دفتر الأستاذ العام</li>
-      <li onclick="showSection('trial-balance')">ميزان المراجعة</li>
-      <li onclick="showSection('financial-statements')">القوائم المالية</li>
-    </ul>
-    <div id="content">
-      <p>اختر أحد الأقسام لعرض محتواه.</p>
+    
+    <!-- Add Transaction Modal -->
+    <div id="transactionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h3 class="text-lg font-bold">إضافة حركة مالية</h3>
+                <button id="closeTransactionModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="transactionForm" class="p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ الحركة</label>
+                        <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">رقم الحركة</label>
+                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" value="TRX-001" readonly>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">وصف الحركة</label>
+                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-200 pt-4">
+                    <h4 class="font-medium text-gray-700 mb-4">تفاصيل الحركة</h4>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">الحساب المدين</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="">اختر حساب مدين</option>
+                                    <!-- Accounts will be loaded here dynamically -->
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">الحساب الدائن</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="">اختر حساب دائن</option>
+                                    <!-- Accounts will be loaded here dynamically -->
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+                                <input type="number" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+                            <textarea rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-4 space-x-reverse">
+                    <button type="button" id="cancelTransaction" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-save ml-2"></i>
+                        حفظ الحركة
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <button onclick="logout()">تسجيل الخروج</button>
-  </div>
-
-  <script src="app.js"></script>
+    
+    <!-- Account Details Modal -->
+    <div id="accountDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h3 class="text-lg font-bold">تفاصيل الحساب</h3>
+                <button id="closeAccountDetailsModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">كود الحساب</h4>
+                        <p id="detailAccountCode" class="mt-1 text-gray-900">-</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">اسم الحساب</h4>
+                        <p id="detailAccountName" class="mt-1 text-gray-900">-</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">نوع الحساب</h4>
+                        <p id="detailAccountType" class="mt-1 text-gray-900">-</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">الحساب الرئيسي</h4>
+                        <p id="detailParentAccount" class="mt-1 text-gray-900">-</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">حالة الحساب</h4>
+                        <p id="detailAccountStatus" class="mt-1 text-gray-900">-</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500">الرصيد الحالي</h4>
+                        <p id="detailAccountBalance" class="mt-1 text-gray-900">-</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="text-sm font-medium text-gray-500">وصف الحساب</h4>
+                    <p id="detailAccountDescription" class="mt-1 text-gray-900">-</p>
+                </div>
+                
+                <div class="border-t border-gray-200 pt-4">
+                    <h4 class="font-medium text-gray-700 mb-4">الحركات الأخيرة</h4>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">مدين</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">دائن</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الرصيد</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accountTransactionsTable" class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد حركات مسجلة</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end mt-6 space-x-4 space-x-reverse">
+                    <button id="editAccountBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-edit ml-2"></i>
+                        تعديل الحساب
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize the accounting system
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize local storage if not exists
+            if (!localStorage.getItem('accountingSystem')) {
+                initializeDatabase();
+            }
+            
+            // Load all data
+            loadAccounts();
+            loadRecentAccounts();
+            loadTransactions();
+            updateStatistics();
+            
+            // Setup event listeners
+            setupEventListeners();
+        });
+        
+        // Initialize database with sample data
+        function initializeDatabase() {
+            const sampleData = {
+                accounts: [
+                    {
+                        id: 1,
+                        code: '1000',
+                        name: 'الأصول',
+                        type: 'asset',
+                        parentId: null,
+                        status: 'active',
+                        balance: 0,
+                        description: 'حساب رئيسي للأصول'
+                    },
+                    {
+                        id: 2,
+                        code: '1100',
+                        name: 'الأصول المتداولة',
+                        type: 'asset',
+                        parentId: 1,
+                        status: 'active',
+                        balance: 0,
+                        description: 'حساب فرعي للأصول المتداولة'
+                    },
+                    {
+                        id: 3,
+                        code: '1110',
+                        name: 'النقدية في الصندوق',
+                        type: 'asset',
+                        parentId: 2,
+                        status: 'active',
+                        balance: 50000,
+                        description: 'النقدية المتوفرة في صندوق الشركة'
+                    },
+                    {
+                        id: 4,
+                        code: '2000',
+                        name: 'الخصوم',
+                        type: 'liability',
+                        parentId: null,
+                        status: 'active',
+                        balance: 0,
+                        description: 'حساب رئيسي للخصوم'
+                    },
+                    {
+                        id: 5,
+                        code: '3000',
+                        name: 'حقوق الملكية',
+                        type: 'equity',
+                        parentId: null,
+                        status: 'active',
+                        balance: 0,
+                        description: 'حساب رئيسي لحقوق الملكية'
+                    },
+                    {
+                        id: 6,
+                        code: '4000',
+                        name: 'الإيرادات',
+                        type: 'revenue',
+                        parentId: null,
+                        status: 'active',
+                        balance: 0,
+                        description: 'حساب رئيسي للإيرادات'
+                    },
+                    {
+                        id: 7,
+                        code: '5000',
+                        name: 'المصروفات',
+                        type: 'expense',
+                        parentId: null,
+                        status: 'active',
+                        balance: 0,
+                        description: 'حساب رئيسي للمصروفات'
+                    }
+                ],
+                transactions: [
+                    {
+                        id: 1,
+                        date: '2023-06-01',
+                        number: 'TRX-001',
+                        description: 'إيداع رأس المال',
+                        entries: [
+                            { accountId: 3, type: 'debit', amount: 50000, description: 'إيداع رأس المال' },
+                            { accountId: 5, type: 'credit', amount: 50000, description: 'إيداع رأس المال' }
+                        ]
+                    }
+                ],
+                nextAccountId: 8,
+                nextTransactionId: 2
+            };
+            
+            localStorage.setItem('accountingSystem', JSON.stringify(sampleData));
+        }
+        
+        // Load accounts into the tree view
+        function loadAccounts() {
+            const data = JSON.parse(localStorage.getItem('accountingSystem'));
+            const accounts = data.accounts;
+            
+            // Build the account tree
+            const accountTree = document.getElementById('accountsTree');
+            accountTree.innerHTML = '';
+            
+            // First, find all root accounts (parentId is null)
+            const rootAccounts = accounts.filter(account => account.parentId === null);
+            
+            // Sort root accounts by code
+            rootAccounts.sort((a, b) => a.code.localeCompare(b.code));
+            
+            // For each root account, build its tree
+            rootAccounts.forEach(account => {
+                const accountItem = createAccountTreeItem(account, accounts);
+                accountTree.appendChild(accountItem);
+            });
+            
+            // Also populate the parent account dropdown in the add account form
+            const parentAccountDropdown = document.getElementById('parentAccount');
+            parentAccountDropdown.innerHTML = '<option value="">لا يوجد (حساب رئيسي)</option>';
+            
+            const activeAccounts = accounts.filter(account => account.status === 'active');
+            activeAccounts.forEach(account => {
+                const option = document.createElement('option');
+                option.value = account.id;
+                option.textContent = `${account.code} - ${account.name}`;
+                parentAccountDropdown.appendChild(option);
+            });
+        }
+        
+        // Create an account tree item (recursive)
+        function createAccountTreeItem(account, allAccounts) {
+            const li = document.createElement('li');
+            
+            // Create the account item
+            const accountDiv = document.createElement('div');
+            accountDiv.className = 'flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg cursor-pointer';
+            accountDiv.dataset.accountId = account.id;
+            
+            // Account icon based on type
+            let iconClass = 'fas fa-wallet';
+            let iconColor = 'text-gray-500';
+            
+            switch(account.type) {
+                case 'asset':
+                    iconClass = 'fas fa-landmark';
+                    iconColor = 'text-blue-500';
+                    break;
+                case 'liability':
+                    iconClass = 'fas fa-file-invoice-dollar';
+                    iconColor = 'text-red-500';
+                    break;
+                case 'equity':
+                    iconClass = 'fas fa-hand-holding-usd';
+                    iconColor = 'text-green-500';
+                    break;
+                case 'revenue':
+                    iconClass = 'fas fa-money-bill-wave';
+                    iconColor = 'text-purple-500';
+                    break;
+                case 'expense':
+                    iconClass = 'fas fa-shopping-cart';
+                    iconColor = 'text-yellow-500';
+                    break;
+            }
+            
+            const accountInfoDiv = document.createElement('div');
+            accountInfoDiv.className = 'flex items-center';
+            
+            const iconDiv = document.createElement('div');
+            iconDiv.className = `bg-opacity-20 ${iconColor.replace('text-', 'bg-')} p-2 rounded-full mr-3`;
+            
+            const icon = document.createElement('i');
+            icon.className = `${iconClass} ${iconColor} text-sm`;
+            iconDiv.appendChild(icon);
+            
+            const textDiv = document.createElement('div');
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'font-medium block';
+            nameSpan.textContent = account.name;
+            
+            const codeSpan = document.createElement('span');
+            codeSpan.className = 'text-xs text-gray-500 block';
+            codeSpan.textContent = account.code;
+            
+            textDiv.appendChild(nameSpan);
+            textDiv.appendChild(codeSpan);
+            
+            accountInfoDiv.appendChild(iconDiv);
+            accountInfoDiv.appendChild(textDiv);
+            
+            const balanceDiv = document.createElement('div');
+            balanceDiv.className = 'text-right';
+            
+            const balanceAmount = document.createElement('div');
+            balanceAmount.className = 'font-medium';
+            balanceAmount.textContent = formatCurrency(account.balance);
+            
+            const balanceLabel = document.createElement('div');
+            balanceLabel.className = 'text-xs text-gray-500';
+            balanceLabel.textContent = 'الرصيد';
+            
+            balanceDiv.appendChild(balanceAmount);
+            balanceDiv.appendChild(balanceLabel);
+            
+            accountDiv.appendChild(accountInfoDiv);
+            accountDiv.appendChild(balanceDiv);
+            
+            li.appendChild(accountDiv);
+            
+            // Find children of this account
+            const childAccounts = allAccounts.filter(a => a.parentId === account.id);
+            
+            if (childAccounts.length > 0) {
+                // Sort children by code
+                childAccounts.sort((a, b) => a.code.localeCompare(b.code));
+                
+                const childUl = document.createElement('ul');
+                childUl.className = 'mr-6 mt-2 space-y-2';
+                
+                childAccounts.forEach(childAccount => {
+                    const childItem = createAccountTreeItem(childAccount, allAccounts);
+                    childUl.appendChild(childItem);
+                });
+                
+                li.appendChild(childUl);
+                
+                // Add toggle functionality
+                accountDiv.addEventListener('click', function(e) {
+                    // Don't toggle if clicking on the balance
+                    if (e.target === balanceDiv || e.target === balanceAmount || e.target === balanceLabel) {
+                        return;
+                    }
+                    
+                    // Check if the click was on the account info (not a child element)
+                    if (e.currentTarget === accountDiv) {
+                        childUl.classList.toggle('hidden');
+                        icon.classList.toggle('fa-chevron-down');
+                        icon.classList.toggle('fa-chevron-right');
+                    }
+                });
+                
+                // Initially hide children and set chevron right icon
+                childUl.classList.add('hidden');
+                icon.className += ' fa-chevron-right ml-1';
+            } else {
+                // Add click event to view account details
+                accountDiv.addEventListener('click', function() {
+                    viewAccountDetails(account.id);
+                });
+            }
+            
+            return li;
+        }
+        
+        // Load recent accounts into the table
+        function loadRecentAccounts() {
+            const data = JSON.parse(localStorage.getItem('accountingSystem'));
+            const accounts = data.accounts;
+            
+            // Sort accounts by ID descending to get the most recent
+            const sortedAccounts = [...accounts].sort((a, b) => b.id - a.id).slice(0, 5);
+            
+            const tableBody = document.getElementById('recentAccountsTable');
+            tableBody.innerHTML = '';
+            
+            sortedAccounts.forEach(account => {
+                const row = document.createElement('tr');
+                
+                const codeCell = document.createElement('td');
+                codeCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                codeCell.textContent = account.code;
+                
+                const nameCell = document.createElement('td');
+                nameCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                nameCell.textContent = account.name;
+                
+                const typeCell = document.createElement('td');
+                typeCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                
+                let typeText = '';
+                switch(account.type) {
+                    case 'asset': typeText = 'أصول'; break;
+                    case 'liability': typeText = 'خصوم'; break;
+                    case 'equity': typeText = 'حقوق ملكية'; break;
+                    case 'revenue': typeText = 'إيرادات'; break;
+                    case 'expense': typeText = 'مصروفات'; break;
+                }
+                typeCell.textContent = typeText;
+                
+                const statusCell = document.createElement('td');
+                statusCell.className = 'px-6 py-4 whitespace-nowrap text-sm';
+                
+                const statusSpan = document.createElement('span');
+                statusSpan.className = account.status === 'active' ? 
+                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800' :
+                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800';
+                statusSpan.textContent = account.status === 'active' ? 'نشط' : 'غير نشط';
+                
+                statusCell.appendChild(statusSpan);
+                
+                row.appendChild(codeCell);
+                row.appendChild(nameCell);
+                row.appendChild(typeCell);
+                row.appendChild(statusCell);
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Load transactions into the table
+        function loadTransactions() {
+            const data = JSON.parse(localStorage.getItem('accountingSystem'));
+            const transactions = data.transactions;
+            const accounts = data.accounts;
+            
+            const tableBody = document.getElementById('transactionsTable');
+            tableBody.innerHTML = '';
+            
+            // Update pagination info
+            document.getElementById('transactionsFrom').textContent = 1;
+            document.getElementById('transactionsTo').textContent = Math.min(transactions.length, 10);
+            document.getElementById('totalTransactions').textContent = transactions.length;
+            
+            // Show only the first 10 transactions for demo purposes
+            const transactionsToShow = transactions.slice(0, 10);
+            
+            transactionsToShow.forEach(transaction => {
+                // Find debit and credit entries
+                const debitEntry = transaction.entries.find(e => e.type === 'debit');
+                const creditEntry = transaction.entries.find(e => e.type === 'credit');
+                
+                // Find the accounts
+                const debitAccount = accounts.find(a => a.id === debitEntry.accountId);
+                const creditAccount = accounts.find(a => a.id === creditEntry.accountId);
+                
+                const row = document.createElement('tr');
+                
+                const numberCell = document.createElement('td');
+                numberCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                numberCell.textContent = transaction.number;
+                
+                const dateCell = document.createElement('td');
+                dateCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                dateCell.textContent = formatDate(transaction.date);
+                
+                const descCell = document.createElement('td');
+                descCell.className = 'px-6 py-4 text-sm text-gray-900';
+                descCell.textContent = transaction.description;
+                
+                const debitCell = document.createElement('td');
+                debitCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                debitCell.textContent = debitAccount ? `${debitAccount.code} - ${debitAccount.name}` : '-';
+                
+                const creditCell = document.createElement('td');
+                creditCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                creditCell.textContent = creditAccount ? `${creditAccount.code} - ${creditAccount.name}` : '-';
+                
+                const amountCell = document.createElement('td');
+                amountCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium';
+                amountCell.textContent = formatCurrency(debitEntry.amount);
+                
+                const actionsCell = document.createElement('td');
+                actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
+                
+                const viewButton = document.createElement('button');
+                viewButton.className = 'text-blue-600 hover:text-blue-900 mr-3';
+                viewButton.innerHTML = '<i class="fas fa-eye"></i>';
+                viewButton.title = 'عرض';
+                
+                const editButton = document.createElement('button');
+                editButton.className = 'text-yellow-600 hover:text-yellow-900 mr-3';
+                editButton.innerHTML = '<i class="fas fa-edit"></i>';
+                editButton.title = 'تعديل';
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'text-red-600 hover:text-red-900';
+                deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteButton.title = 'حذف';
+                
+                actionsCell.appendChild(viewButton);
+                actionsCell.appendChild(editButton);
+                actionsCell.appendChild(deleteButton);
+                
+                row.appendChild(numberCell);
+                row.appendChild(dateCell);
+                row.appendChild(descCell);
+                row.appendChild(debitCell);
+                row.appendChild(creditCell);
+                row.appendChild(amountCell);
+                row.appendChild(actionsCell);
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Also populate the transaction form dropdowns
+            const debitAccountDropdown = document.querySelector('#transactionForm select:nth-of-type(1)');
+            const creditAccountDropdown = document.querySelector('#transactionForm select:nth-of-type(2)');
+            
+            debitAccountDropdown.innerHTML = '<option value="">اختر حساب مدين</option>';
+            creditAccountDropdown.innerHTML = '<option value="">اختر حساب دائن</option>';
+            
+            const activeAccounts = accounts.filter(account => account.status === 'active');
+            activeAccounts.forEach(account => {
+                const debitOption = document.createElement('option');
+                debitOption.value = account.id;
+                debitOption.textContent = `${account.code} - ${account.name}`;
+                debitAccountDropdown.appendChild(debitOption.cloneNode(true));
+                
+                const creditOption = debitOption.cloneNode(true);
+                creditAccountDropdown.appendChild(creditOption);
+            });
+        }
+        
+        // Update statistics
+        function updateStatistics() {
+            const data = JSON.parse(localStorage.getItem('accountingSystem'));
+            const accounts = data.accounts;
+            
+            document.getElementById('totalAccounts').textContent = accounts.length;
+            document.getElementById('mainAccounts').textContent = accounts.filter(a => a.parentId === null).length;
+            document.getElementById('subAccounts').textContent = accounts.filter(a => a.parentId !== null).length;
+            document.getElementById('activeAccounts').textContent = accounts.filter(a => a.status === 'active').length;
+        }
+        
+        // View account details
+        function viewAccountDetails(accountId) {
+            const data = JSON.parse(localStorage.getItem('accountingSystem'));
+            const accounts = data.accounts;
+            const transactions = data.transactions;
+            
+            const account = accounts.find(a => a.id === accountId);
+            if (!account) return;
+            
+            // Set account details
+            document.getElementById('detailAccountCode').textContent = account.code;
+            document.getElementById('detailAccountName').textContent = account.name;
+            
+            let typeText = '';
+            switch(account.type) {
+                case 'asset': typeText = 'أصول'; break;
+                case 'liability': typeText = 'خصوم'; break;
+                case 'equity': typeText = 'حقوق ملكية'; break;
+                case 'revenue': typeText = 'إيرادات'; break;
+                case 'expense': typeText = 'مصروفات'; break;
+            }
+            document.getElementById('detailAccountType').textContent = typeText;
+            
+            if (account.parentId) {
+                const parentAccount = accounts.find(a => a.id === account.parentId);
+                document.getElementById('detailParentAccount').textContent = 
+                    parentAccount ? `${parentAccount.code} - ${parentAccount.name}` : '-';
+            } else {
+                document.getElementById('detailParentAccount').textContent = '-';
+            }
+            
+            document.getElementById('detailAccountStatus').textContent = 
+                account.status === 'active' ? 'نشط' : 'غير نشط';
+            
+            document.getElementById('detailAccountBalance').textContent = formatCurrency(account.balance);
+            document.getElementById('detailAccountDescription').textContent = account.description || '-';
+            
+            // Load account transactions
+            const accountTransactionsTable = document.getElementById('accountTransactionsTable');
+            accountTransactionsTable.innerHTML = '';
+            
+            // Find all transactions that include this account
+            const accountTransactions = transactions.filter(t => 
+                t.entries.some(e => e.accountId === accountId)
+            );
+            
+            if (accountTransactions.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد حركات مسجلة</td>';
+                accountTransactionsTable.appendChild(row);
+            } else {
+                // Calculate running balance
+                let runningBalance = 0;
+                
+                accountTransactions.forEach(transaction => {
+                    const entry = transaction.entries.find(e => e.accountId === accountId);
+                    
+                    if (entry.type === 'debit') {
+                        runningBalance += entry.amount;
+                    } else {
+                        runningBalance -= entry.amount;
+                    }
+                    
+                    const row = document.createElement('tr');
+                    
+                    const dateCell = document.createElement('td');
+                    dateCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                    dateCell.textContent = formatDate(transaction.date);
+                    
+                    const descCell = document.createElement('td');
+                    descCell.className = 'px-6 py-4 text-sm text-gray-900';
+                    descCell.textContent = entry.description || transaction.description;
+                    
+                    const debitCell = document.createElement('td');
+                    debitCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                    debitCell.textContent = entry.type === 'debit' ? formatCurrency(entry.amount) : '-';
+                    
+                    const creditCell = document.createElement('td');
+                    creditCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                    creditCell.textContent = entry.type === 'credit' ? formatCurrency(entry.amount) : '-';
+                    
+                    const balanceCell = document.createElement('td');
+                    balanceCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium';
+                    balanceCell.textContent = formatCurrency(runningBalance);
+                    
+                    row.appendChild(dateCell);
+                    row.appendChild(descCell);
+                    row.appendChild(debitCell);
+                    row.appendChild(creditCell);
+                    row.appendChild(balanceCell);
+                    
+                    accountTransactionsTable.appendChild(row);
+                });
+            }
+            
+            // Show the modal
+            document.getElementById('accountDetailsModal').classList.remove('hidden');
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Toggle sidebar
+            document.getElementById('toggleSidebar').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('collapsed');
+                document.querySelector('.main-content').classList.toggle('mr-64');
+                document.querySelector('.main-content').classList.toggle('mr-16');
+            });
+            
+            // Tab switching
+            document.getElementById('accountsTab').addEventListener('click', function() {
+                switchTab('accounts');
+            });
+            
+            document.getElementById('addAccountTab').addEventListener('click', function() {
+                switchTab('addAccount');
+            });
+            
+            document.getElementById('transactionsTab').addEventListener('click', function() {
+                switchTab('transactions');
+            });
+            
+            document.getElementById('reportsTab').addEventListener('click', function() {
+                switchTab('reports');
+            });
+            
+            // Add account form submission
+            document.getElementById('addAccountForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const accountCode = document.getElementById('accountCode').value;
+                const accountName = document.getElementById('accountName').value;
+                const accountType = document.getElementById('accountType').value;
+                const parentAccount = document.getElementById('parentAccount').value || null;
+                const accountStatus = document.getElementById('accountStatus').value;
+                const openingBalance = parseFloat(document.getElementById('openingBalance').value) || 0;
+                const accountDescription = document.getElementById('accountDescription').value;
+                
+                // Validate
+                if (!accountCode || !accountName || !accountType) {
+                    showAlert('error', 'الرجاء ملء جميع الحقول المطلوبة');
+                    return;
+                }
+                
+                // Check if account code already exists
+                const data = JSON.parse(localStorage.getItem('accountingSystem'));
+                const codeExists = data.accounts.some(a => a.code === accountCode);
+                
+                if (codeExists) {
+                    showAlert('error', 'كود الحساب موجود مسبقاً');
+                    return;
+                }
+                
+                // Create new account
+                const newAccount = {
+                    id: data.nextAccountId++,
+                    code: accountCode,
+                    name: accountName,
+                    type: accountType,
+                    parentId: parentAccount ? parseInt(parentAccount) : null,
+                    status: accountStatus,
+                    balance: openingBalance,
+                    description: accountDescription
+                };
+                
+                data.accounts.push(newAccount);
+                localStorage.setItem('accountingSystem', JSON.stringify(data));
+                
+                // Reset form
+                this.reset();
+                document.getElementById('openingBalance').value = '0';
+                
+                // Update UI
+                loadAccounts();
+                loadRecentAccounts();
+                updateStatistics();
+                
+                showAlert('success', 'تم إضافة الحساب بنجاح');
+                
+                // Switch to accounts tab
+                switchTab('accounts');
+            });
+            
+            // Transaction modal
+            document.getElementById('addTransactionBtn').addEventListener('click', function() {
+                document.getElementById('transactionModal').classList.remove('hidden');
+            });
+            
+            document.getElementById('closeTransactionModal').addEventListener('click', function() {
+                document.getElementById('transactionModal').classList.add('hidden');
+            });
+            
+            document.getElementById('cancelTransaction').addEventListener('click', function() {
+                document.getElementById('transactionModal').classList.add('hidden');
+            });
+            
+            // Transaction form submission
+            document.getElementById('transactionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const form = e.target;
+                const date = form.querySelector('input[type="date"]').value;
+                const description = form.querySelector('input[type="text"]').value;
+                const debitAccountId = form.querySelectorAll('select')[0].value;
+                const creditAccountId = form.querySelectorAll('select')[1].value;
+                const amount = parseFloat(form.querySelector('input[type="number"]').value);
+                
+                // Validate
+                if (!date || !description || !debitAccountId || !creditAccountId || !amount || amount <= 0) {
+                    showAlert('error', 'الرجاء ملء جميع الحقول المطلوبة بشكل صحيح');
+                    return;
+                }
+                
+                if (debitAccountId === creditAccountId) {
+                    showAlert('error', 'لا يمكن أن يكون الحساب المدين والدائن نفس الحساب');
+                    return;
+                }
+                
+                // Get data
+                const data = JSON.parse(localStorage.getItem('accountingSystem'));
+                const accounts = data.accounts;
+                
+                // Check if accounts exist
+                const debitAccount = accounts.find(a => a.id === parseInt(debitAccountId));
+                const creditAccount = accounts.find(a => a.id === parseInt(creditAccountId));
+                
+                if (!debitAccount || !creditAccount) {
+                    showAlert('error', 'الحساب المدين أو الدائن غير موجود');
+                    return;
+                }
+                
+                // Create transaction
+                const newTransaction = {
+                    id: data.nextTransactionId++,
+                    date: date,
+                    number: `TRX-${String(data.nextTransactionId - 1).padStart(3, '0')}`,
+                    description: description,
+                    entries: [
+                        {
+                            accountId: parseInt(debitAccountId),
+                            type: 'debit',
+                            amount: amount,
+                            description: description
+                        },
+                        {
+                            accountId: parseInt(creditAccountId),
+                            type: 'credit',
+                            amount: amount,
+                            description: description
+                        }
+                    ]
+                };
+                
+                // Update account balances
+                debitAccount.balance += amount;
+                creditAccount.balance -= amount;
+                
+                // Save data
+                data.transactions.push(newTransaction);
+                localStorage.setItem('accountingSystem', JSON.stringify(data));
+                
+                // Reset form
+                form.reset();
+                
+                // Close modal
+                document.getElementById('transactionModal').classList.add('hidden');
+                
+                // Update UI
+                loadTransactions();
+                loadAccounts();
+                
+                showAlert('success', 'تم إضافة الحركة المالية بنجاح');
+            });
+            
+            // Account details modal
+            document.getElementById('closeAccountDetailsModal').addEventListener('click', function() {
+                document.getElementById('accountDetailsModal').classList.add('hidden');
+            });
+            
+            // Edit account button
+            document.getElementById('editAccountBtn').addEventListener('click', function() {
+                // In a real application, this would open an edit form
+                showAlert('info', 'هذه الميزة غير متاحة في النسخة التجريبية');
+            });
+        }
+        
+        // Switch between tabs
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('border-blue-500', 'text-blue-600');
+                button.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`${tabName}Content`).classList.remove('hidden');
+            
+            // Set active tab button
+            document.getElementById(`${tabName}Tab`).classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(`${tabName}Tab`).classList.add('border-blue-500', 'text-blue-600');
+        }
+        
+        // Show alert message
+        function showAlert(type, message) {
+            const alertsContainer = document.getElementById('alertsContainer');
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert mb-4 p-4 rounded-lg border ${type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 
+                                type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 
+                                'bg-blue-50 border-blue-200 text-blue-700'}`;
+            
+            const iconClass = type === 'error' ? 'fa-exclamation-circle' : 
+                            type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+            
+            alertDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${iconClass} ml-2"></i>
+                    <span>${message}</span>
+                    <button class="mr-auto text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            alertsContainer.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+            
+            // Add click event to close button
+            alertDiv.querySelector('button').addEventListener('click', function() {
+                alertDiv.remove();
+            });
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' }).format(amount);
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('ar-EG', options);
+        }
+    </script>
 </body>
 </html>
