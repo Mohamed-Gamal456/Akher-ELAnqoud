@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eslam App - برنامج محاسبي</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div id="login-section" class="container centered">
+    <h1>مرحبا بك في Eslam App</h1>
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+  </div>
 
+  <div id="dashboard" class="container hidden">
+    <h2>لوحة التحكم</h2>
+    <ul>
+      <li onclick="showSection('journal')">قيود اليومية</li>
+      <li onclick="showSection('ledger')">دفتر الأستاذ العام</li>
+      <li onclick="showSection('trial-balance')">ميزان المراجعة</li>
+      <li onclick="showSection('financial-statements')">القوائم المالية</li>
+    </ul>
+    <div id="content">
+      <p>اختر أحد الأقسام لعرض محتواه.</p>
+    </div>
+    <button onclick="logout()">تسجيل الخروج</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
